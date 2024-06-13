@@ -15,6 +15,12 @@ class Post extends Model
         'description',
         'user_id',
     ];
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public static function list(){
         return self::all();
     }
