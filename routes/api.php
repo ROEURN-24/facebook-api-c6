@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -45,3 +46,17 @@ Route::controller(AuthController::class)->group(function () {
     });
 });
 */
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/me', [AuthController::class, 'index'])->middleware('auth:sanctum');
+
+// Posts routes with authentication
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts/{post}', [PostController::class, 'show']); // Use {post} instead of {id}
+    Route::put('/posts/{post}', [PostController::class, 'update']); // Use {post} instead of {id}
+    Route::delete('/posts/{post}', [PostController::class, 'destroy']); // Use {post} instead of {id}
+});
