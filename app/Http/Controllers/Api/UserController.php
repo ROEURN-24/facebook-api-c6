@@ -1,20 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
-
-class AuthController extends Controller
+class UserController extends Controller
 {
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -57,6 +55,7 @@ class AuthController extends Controller
     }
 
 
+
     public function login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -93,15 +92,53 @@ class AuthController extends Controller
         ]);
     }
 
-    public function index(Request $request)
+
+    public function logout(Request $request)
     {
         $user = $request->user();
-        $permissions = $user->getAllPermissions();
-        $roles = $user->getRoleNames();
+        if ($user && $user->currentAccessToken) {
+            $user->currentAccessToken->delete();
+            return response()->json([
+                'message' => 'User logged out successfully'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'User not found'
+            ], 400);
+        }
+    }
+
+    public function index()
+    {
+        dd(1);
+        // $users = User::all();
+
+        // return response()->json([
+        //     'success' => true,
+        //     'data' => $users->makeVisible(['image'])->map(function ($user) {
+        //         return [
+        //             'id' => $user->id,
+        //             'name' => $user->name,
+        //             'email' => $user->email,
+        //             'image' => $user->image ? Storage::url($user->image) : null,
+        //         ];
+        //     })
+        // ], 200);
+    }
+  
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $imageUrl = $user->image ? Storage::url($user->image) : null;
+
         return response()->json([
-            'message' => 'Login success',
-            'data' => $user,
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'image' => $imageUrl,
+            ]
         ]);
     }
-    
+
 }
