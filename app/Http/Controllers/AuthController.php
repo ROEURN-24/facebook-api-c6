@@ -166,57 +166,8 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
-    // Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+
     // Change Password
-    // public function changePassword(Request $request): JsonResponse
-    // {
-    //     // Validate incoming request data
-    //     $validator = Validator::make($request->all(), [
-    //         'id' => 'required|integer',
-    //         'email' => 'required|email',
-    //         'current_password' => 'required|string|min:8',
-    //         'new_password' => 'required|string|min:8',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Validation error',
-    //             'errors' => $validator->errors()
-    //         ], 422);
-    //     }
-
-    //     // Retrieve the user based on provided id and email
-    //     $user = User::where('id', $request->id)
-    //     ->where('email', $request->email)
-    //     ->first();
-
-    //     // Check if user exists
-    //     if (!$user) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'User not found'
-    //         ], 404);
-    //     }
-
-    //     // Check if the current password matches
-    //     if (!Hash::check($request->current_password, $user->password)) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Current password is incorrect'
-    //         ], 400);
-    //     }
-
-    //     // Update the password
-    //     $user->password = Hash::make($request->new_password);
-    //     $user->save();
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Password changed successfully'
-    //     ]);
-    // }
-
     public function changePassword(Request $request): JsonResponse
     {
         // Validate incoming request data
