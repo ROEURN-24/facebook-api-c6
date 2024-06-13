@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\API\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -59,4 +60,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/posts/{post}', [PostController::class, 'show']); // Use {post} instead of {id}
     Route::put('/posts/{post}', [PostController::class, 'update']); // Use {post} instead of {id}
     Route::delete('/posts/{post}', [PostController::class, 'destroy']); // Use {post} instead of {id}
+});
+
+
+//! Comment routes
+Route::prefix('comment')->group(function () {
+    Route::get('/list', [CommentController::class, 'index'])->name('comment.list');
+    Route::post('/create', [CommentController::class, 'store'])->name('comment.create');
+    Route::get('/show/{id}', [CommentController::class, 'show'])->name('comment.show');
+    Route::put('/update/{id}', [CommentController::class, 'update'])->name('comment.update');
+    Route::delete('/delete/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 });
