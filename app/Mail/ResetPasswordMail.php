@@ -23,21 +23,25 @@ class ResetPasswordMail extends Mailable
      * @param  \DateTime|null  $expires
      * @return void
      */
-    public function __construct(User $user, string $token, ?\DateTime $expires = null)
+    public function __construct(User $user, string $token, string $expiresAt)
     {
         $this->user = $user;
-        $this->resetLink = url('/password/reset', ['token' => $token]); // Correct way to pass parameters to url()
-        $this->expires = $expires;
+        $this->resetLink = $token;
+        $this->expires = $expiresAt;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('emails.reset_password')
-            ->subject('Reset Your Password'); // Optional: You can set a custom subject here
+        $resetUrl = url('/password/reset/' . $this->resetLink);
+
+        return $this->from('roeurnkaki@gmail.com', 'Artificial Reality')
+            ->view('emails.reset_password')
+            ->subject('Reset Your Password')
+            ->with([
+                'resetLink' => $resetUrl,
+                'expires' => $this->expires,
+            ]);
     }
+
+
 }
