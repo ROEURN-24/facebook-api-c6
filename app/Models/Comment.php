@@ -10,9 +10,7 @@ class Comment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'text',
-        'post_id',
-        'user_id',
+        'type', 'content', 'post_id', 'user_id'
     ];
 
     public function user()
@@ -29,11 +27,18 @@ class Comment extends Model
         return self::all();
     }
 
+   
     public static function store($request, $id = null)
     {
-        $data = $request->only("text", "post_id", "user_id");
-        $data = self::updateOrCreate(['id' => $id], $data);
-        return $data;
+        $data = $request->only('type', 'content', 'post_id', 'user_id');
+
+        // Check if the content is an image file
+        if ($request->hasFile('content') && $request->file('content')->isValid()) {
+            $data['content'] = $request->file('content')->store('public/comments');
+        }
+
+        $comment = self::updateOrCreate(['id' => $id], $data);
+        return $comment;
     }
 
 }

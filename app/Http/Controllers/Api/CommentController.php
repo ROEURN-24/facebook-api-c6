@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+// use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -14,6 +18,7 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $comments = Comment::list();
+        $comments = CommentResource::collection($comments);
         return response(['success' => true, 'data' =>$comments], 200);
     }
 
@@ -22,8 +27,40 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        Comment::store($request);
-        return response()->json(['success' => true, 'message' => "Create comment successfully"], 200);
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|in:text,image',
+            'content' => 'required',
+            'post_id' => 'required|exists:posts,id',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Adjust the content based on type
+        if ($request->type === 'image' && $request->hasFile('content')) {
+            // Validate the image
+            $validator = Validator::make($request->all(), [
+                'content' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+        }
+
+        // Create or update the comment
+        $comment = Comment::store($request);
+
+        return response()->json(['message' => 'Comment created successfully', 'comment' => $comment], 201);
+    // }
+    //     Comment::store($request);
+    //     return response()->json(['success' => true, 'message' => "Create comment successfully"], 200);
+
+
     }
 
     /**
