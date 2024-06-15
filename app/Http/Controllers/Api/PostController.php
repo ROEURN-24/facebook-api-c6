@@ -45,6 +45,7 @@ class PostController extends Controller
             $path = $image->store('image', 'public');
             $path = Storage::url($path);
         }
+        
         $post = Post::create([
             'title' => $request->title,
             'user_id' => $request->user_id,

@@ -43,4 +43,5 @@ class Like extends Model
         $like = self::create($data);
         return $like;
     }
+    
 }

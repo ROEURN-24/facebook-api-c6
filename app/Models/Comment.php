@@ -31,12 +31,14 @@ class Comment extends Model
     public static function store($request, $id = null)
     {
         $data = $request->only('type', 'content', 'post_id', 'user_id');
-
+    
         // Check if the content is an image file
         if ($request->hasFile('content') && $request->file('content')->isValid()) {
-            $data['content'] = $request->file('content')->store('public/comments');
+            $image = $request->file('content');
+            $path = $image->store('comments', 'public');
+            $data['content'] = $path;
         }
-
+    
         $comment = self::updateOrCreate(['id' => $id], $data);
         return $comment;
     }
