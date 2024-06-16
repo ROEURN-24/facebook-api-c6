@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LikeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request)
     {
         $likes = Like::list();
@@ -21,16 +19,12 @@ class LikeController extends Controller
         return response(['success' => true, 'data' => $likes], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'like_number' => 'required',
             'type' => 'required|string|in:like,love,haha,angry',
             'post_id' => 'required|exists:posts,id',
-            'user_id' => 'required|exists:users,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -38,33 +32,31 @@ class LikeController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        // Check if the user has already liked the post
+        $user = auth()->user(); 
+
         $existingLike = Like::where('post_id', $request->post_id)
-            ->where('user_id', $request->user_id)
+            ->where('user_id', $user->id)
             ->first();
 
         if ($existingLike) {
-            // If the user has already liked the post, update the like
             $existingLike->delete([
                 'type' => $request->type,
                 'image' => $this->storeImage($request),
             ]);
 
-            return response()->json(['message' => 'User unlike successfully', 'like' => $existingLike], 200);
+            return response()->json(['message' => 'User unliked successfully'], 200);
         }
 
-        // Create the new like
         $like = Like::create([
             'like_number' => $request->like_number,
             'type' => $request->type,
             'post_id' => $request->post_id,
-            'user_id' => $request->user_id,
+            'user_id' => $user->id,
             'image' => $this->storeImage($request),
         ]);
 
         return response()->json(['message' => 'Like created successfully', 'like' => $like], 201);
     }
-
 
     public function show(string $id)
     {
@@ -81,6 +73,5 @@ class LikeController extends Controller
 
         return null;
     }
-
 
 }

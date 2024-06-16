@@ -40,13 +40,22 @@ class Post extends Model
 
     public static function store($request, $id = null)
     {
-        $data = $request->only('title', 'image', 'user_id');
+        $data = $request->only('title', 'image');
+        $data['user_id'] = $request->user_id ?? auth()->id(); 
 
         if ($request->hasFile('image')) {
-            // Store the uploaded file
+
             $image = $request->file('image');
-            $path = $image->store('storage/app/public');
+            $path = $image->store('posts', 'public');
             $path = Storage::url($path);
+            $data['image'] = $path;
+        }
+
+        if ($id) {
+            $post = self::find($id);
+            if ($post && !$request->hasFile('image')) {
+                $data['image'] = $post->image; 
+            }
         }
 
         $post = self::updateOrCreate(['id' => $id], $data);
