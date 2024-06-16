@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('stories', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('image');
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->string("story");
+            $table->enum("status",["published","expired"])->default("published");
+            $table->unsignedBigInteger("likes")->default(0);
+            $table->unsignedBigInteger("comment")->default(0);
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('stories');
     }
-    
 };
+

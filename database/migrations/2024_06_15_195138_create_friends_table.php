@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('friends', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('image');
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger("friend_id");
+            $table->foreign("friend_id")->references("id")->on("users");
+            $table->timestamp("accepted_at")->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,7 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('friends');
     }
-    
 };
