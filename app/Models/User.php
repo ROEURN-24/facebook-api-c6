@@ -1,120 +1,77 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'email_verified_at',
+        'name', 'email', 'password',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
-
-    /**
-     * Define the relationship for sent friend requests.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    // Relationship: Friend requests sent by this user
     public function sentFriendRequests()
     {
         return $this->hasMany(FriendRequest::class, 'sender_id');
     }
 
-    /**
-     * Define the relationship for received friend requests.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    // Relationship: Friend requests received by this user
     public function receivedFriendRequests()
     {
         return $this->hasMany(FriendRequest::class, 'recipient_id');
     }
 
-    /**
-     * Define the relationship for friends.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
+    // Relationship: Friends of this user
     public function friends()
     {
         return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
-                    ->withPivot('accepted_at')
-                    ->withTimestamps();
+            ->withPivot('accepted_at')
+            ->withTimestamps();
     }
 
-    /**
-     * Check if the user has a specific friend.
-     *
-     * @param  User  $friend
-     * @return bool
-     */
-    public function hasFriend(User $friend)
+    // Method to check if a user is a friend of this user
+    public function isFriend(User $user)
     {
-        return $this->friends()->where('id', $friend->id)->exists();
+        return $this->friends()->where('friend_id', $user->id)->exists();
     }
 
-    /**
-     * Remove a friend from the user's friends list.
-     *
-     * @param  User  $friend
-     * @return void
-     */
-    public function removeFriend(User $friend)
+    public function followers()
     {
-        $this->friends()->detach($friend->id);
+        return $this->hasMany(Follower::class, 'user_id');
     }
 
-    /**
-     * Define the relationship for user posts.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function posts()
+    public function following()
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Follower::class, 'follower_id');
+    }
+
+    public function isFollowing($userId)
+    {
+        return $this->following()->where('user_id', $userId)->exists();
+    }
+
+    public function isFollowedBy($userId)
+    {
+        return $this->followers()->where('follower_id', $userId)->exists();
+    }
+
+
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
     }
 }
-

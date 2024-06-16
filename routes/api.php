@@ -8,7 +8,10 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\File;
-use App\Http\Controllers\Friend\FriendRequestController;
+use App\Http\Controllers\Api\FollowerController;
+use App\Http\Controllers\Api\FriendController;
+use App\Http\Controllers\Api\FriendRequestController;
+use App\Http\Controllers\Api\StoryController;
 
 // Post routes prefix
 Route::prefix('post')->group(function () {
@@ -74,17 +77,38 @@ Route::get('/storage/{path}', function ($path) {
 })->where('path', '.*');
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Friend request routes
-    Route::post('/friend-requests/{friendId}', [FriendRequestController::class, 'send']);
-    Route::put('/friend-requests/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
-    Route::put('/friend-requests/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
-    Route::delete('/friend-requests/{friendRequest}/cancel', [FriendRequestController::class, 'cancelRequest']);
+// Routes for FriendController
+Route::prefix('friends')->group(function () {
+    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
+    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
+    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
+    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
+    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
+});
 
-    // Listing routes
-    Route::get('/friend-requests', [FriendRequestController::class, 'listRequests']);
-    Route::get('/friends', [FriendRequestController::class, 'listFriends']);
+// Routes for FriendRequestController
+Route::prefix('friend-requests')->group(function () {
+    Route::post('/', [FriendRequestController::class, 'send']);
+    Route::put('/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
+    Route::put('/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
+    Route::get('/pending', [FriendRequestController::class, 'pendingRequests']);
+    Route::get('/sent', [FriendRequestController::class, 'sentRequests']);
+    Route::delete('/{friendRequest}', [FriendRequestController::class, 'cancelRequest']);
+});
 
-    // Unfriend route
-    Route::delete('/friend/{friend}/cancel', [FriendRequestController::class, 'deleteFriend']);
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('follow', [FollowerController::class, 'follow']);
+    Route::delete('unfollow/{user}', [FollowerController::class, 'unfollow']);
+    Route::get('followers/{user}', [FollowerController::class, 'followers']);
+    Route::get('following/{user}', [FollowerController::class, 'following']);
+});
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('story', [StoryController::class, 'create']);
+    Route::get('user-stories/{user}', [StoryController::class, 'userStories']);
+    Route::get('all-stories', [StoryController::class, 'allStories']);
+    Route::delete('story/{story}', [StoryController::class, 'delete']);
 });
