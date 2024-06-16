@@ -1,0 +1,114 @@
+[33mcommit a90d542c89b3f7229cae5f1dbbc57ef99ea1aa87[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/friendship[m[33m, [m[1;32mfriendship[m[33m)[m
+Author: ROEURNKAKI <roeurnkaki@gmail.com>
+Date:   Sun Jun 16 12:49:04 2024 +0700
+
+    Users's Friendships
+
+[33mcommit 4b8b64869cbd912e71419aa22cb0e00eef8d3fa6[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: ROEURNKAKI <roeurnkaki@gmail.com>
+Date:   Sat Jun 15 17:59:08 2024 +0700
+
+    #4 [feature] Authentications user
+
+[33mcommit 2db2b9c194b4ba7e54f2510fdf1e9101edd9b541[m
+Merge: 956e309 96c6b60
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Sat Jun 15 16:39:32 2024 +0700
+
+    merge request from comment
+
+[33mcommit 96c6b60dc169dd85f0ab4bcc19f5ed85664a981b[m[33m ([m[1;31morigin/comment[m[33m)[m
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Sat Jun 15 16:35:35 2024 +0700
+
+    update user comment and like
+
+[33mcommit 9a2587c15d48fd665831bbccb58bf3d122e0bc2d[m
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Sat Jun 15 16:33:12 2024 +0700
+
+    update user comment and like
+
+[33mcommit 956e3092324c13ecb662a5d338b0446eecf52b79[m[33m ([m[1;31morigin/user_profile[m[33m)[m
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Sat Jun 15 11:55:53 2024 +0700
+
+    #4 [Feature] Upload users' profile and background images
+
+[33mcommit ce0d9219971cff192297129dde3603e6adece95a[m
+Merge: 2edf0e8 a8451ca
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Sat Jun 15 09:35:35 2024 +0700
+
+    #3 [secure] Authentication of user & User controller
+
+[33mcommit 2edf0e804bae83f61651810d891f22990c510f6c[m
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Sat Jun 15 09:32:10 2024 +0700
+
+    #3 [secure] Authentication of user & User controller
+
+[33mcommit a8451cad93a9c74ec5f4c22d95f4829e1197b0d4[m
+Merge: 01e4698 37d2266
+Author: ENTHEUN <141112595+ENTHEURN@users.noreply.github.com>
+Date:   Thu Jun 13 16:47:56 2024 +0700
+
+    Merge pull request #2 from ROEURN-24/comment
+    
+    create user comment
+
+[33mcommit 37d226654fecb0c4b83258e6edc9e3329206678b[m
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Thu Jun 13 16:42:01 2024 +0700
+
+    create user comment
+
+[33mcommit 01e4698bfa34f3377c3cc3cca93f4ca56ec8ec78[m
+Merge: 605afaa 3c78286
+Author: LEY.TEM <LEY.TEM@pnc.lan>
+Date:   Thu Jun 13 15:40:54 2024 +0700
+
+    push code
+
+[33mcommit 3c782867016411f28243ef90b477e381f8e31a10[m[33m ([m[1;31morigin/post[m[33m)[m
+Author: LEY.TEM <LEY.TEM@pnc.lan>
+Date:   Thu Jun 13 15:32:51 2024 +0700
+
+    push to master
+
+[33mcommit 605afaad27aaaa7e6288cca2ed4ab26dd724869f[m
+Merge: e772149 d038035
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Thu Jun 13 10:29:46 2024 +0700
+
+    User Authentications of system
+
+[33mcommit e7721498c43749b83ee81f3391f97096a6867492[m
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Thu Jun 13 10:17:14 2024 +0700
+
+    User Authentications of system
+
+[33mcommit d0380356d554151cb1e755c2bf595b8370fea760[m
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Thu Jun 13 09:53:03 2024 +0700
+
+    #1 update user image profile
+
+[33mcommit 467458bb15df498fe0b07b76de474b5fd3d3640c[m
+Author: THEUN.EN <THEUN.EN@PNC.LAN>
+Date:   Tue Jun 11 09:36:57 2024 +0700
+
+    #1 register create an account in facebook
+
+[33mcommit bd552105c2c96d6865124af4a8a28413df2801be[m
+Author: LEY.TEM <LEY.TEM@PNC.LAN>
+Date:   Mon Jun 10 09:51:59 2024 +0700
+
+    push table
+
+[33mcommit a5fbc35ecea00e99791560151a60d6358a2b983c[m
+Author: ROEURN-24 <roeurn.kaki@student.passerellesnumeriques.org>
+Date:   Mon Jun 10 08:38:46 2024 +0700
+
+    Facebook API - Initialize a Laravel Project
