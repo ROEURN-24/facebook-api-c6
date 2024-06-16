@@ -62,7 +62,7 @@ class CommentController extends Controller
         if ($request->type === 'image' && $request->hasFile('content')) {
             // Store the uploaded file
             $image = $request->file('content');
-            $path = $image->store('images', 'public');
+            $path = $image->store('comments', 'public');
             $content = Storage::url($path);
         }
 

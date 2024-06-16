@@ -52,13 +52,6 @@ class PostController extends Controller
             'image' => isset($path) ? $path : null,
         ]);
 
-
-        // $post = Post::create([
-        //     'title' => $request->title,
-        //     'image' => $image,
-        //     'user_id' => $request->user_id,
-        // ]);
-
         return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);
     }
 

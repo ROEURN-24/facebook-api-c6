@@ -45,7 +45,7 @@ class Post extends Model
         if ($request->hasFile('image')) {
             // Store the uploaded file
             $image = $request->file('image');
-            $path = $image->store('storage/app/public');
+            $path = $image->store('posts', 'public');
             $path = Storage::url($path);
         }
 

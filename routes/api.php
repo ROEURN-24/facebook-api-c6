@@ -34,7 +34,6 @@ Route::prefix('comment')->group(function () {
 Route::prefix('like')->group(function () {
     Route::get('/list', [LikeController::class, 'index'])->name('like.list');
     Route::post('/create', [LikeController::class, 'store'])->name('like.create');
-    Route::get('/show/{id}', [LikeController::class, 'show'])->name('like.show');
 });
 
 

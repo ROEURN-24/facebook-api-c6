@@ -37,7 +37,7 @@ class Like extends Model
         $data = $request->only('like_number','type', 'image', 'post_id', 'user_id');
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $data['image'] = $request->file('image')->store('public/likes');
+            $data['image'] = $request->file('image')->store('likes', 'public');
         }
 
         $like = self::create($data);

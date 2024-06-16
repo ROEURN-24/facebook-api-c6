@@ -65,7 +65,7 @@ class LikeController extends Controller
         return response()->json(['message' => 'Like created successfully', 'like' => $like], 201);
     }
 
-
+    
     public function show(string $id)
     {
        $like = Like::find($id);
