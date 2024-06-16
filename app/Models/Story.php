@@ -2,28 +2,29 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class Story extends Model
 {
-    use HasFactory;
-    protected $fillable = [
-        "user_id",
-        "story",
-        "status",
-        "likes",
-        "comment",
-    ];
+    protected $fillable = ['user_id', 'content', 'expires_at', 'visibility'];
 
-    /**
-     * Get the user that owns the Story
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeVisibleTo($query, $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('visibility', 'public')
+              ->orWhere(function ($q2) use ($user) {
+                  $q2->where('visibility', 'friends')
+                     ->whereHas('user.friends', function ($q3) use ($user) {
+                         $q3->where('friends.friend_id', $user->id);
+                     });
+              })
+              ->orWhere('user_id', $user->id);
+        })->where('expires_at', '>', Carbon::now());
     }
 }
