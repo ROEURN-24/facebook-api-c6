@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\File;
-use App\Http\Controllers\Api\FollowerController;
+// use App\Http\Controllers\Api\FollowerController;
 use App\Http\Controllers\Api\FriendController;
 use App\Http\Controllers\Api\FriendRequestController;
 use App\Http\Controllers\Api\StoryController;
@@ -87,10 +87,11 @@ Route::get('/storage/{path}', function ($path) {
 
 
 
+Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
 
 
 // Routes for managing friend requests
-Route::prefix('friend-requests')->group(function () {
+Route::prefix('/friend-requests')->group(function () {
     // Send a friend request
     Route::post('/', [FriendRequestController::class, 'send']);
 

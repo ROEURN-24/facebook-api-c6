@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FriendRequestController extends Controller
 {
@@ -17,32 +18,40 @@ class FriendRequestController extends Controller
      */
     public function send(Request $request)
     {
-        $request->validate([
-            'recipient_id' => 'required|exists:users,id',
-            'message' => 'nullable|string',
-        ]);
+        try {
+            $request->validate([
+                'recipient_id' => 'required|exists:users,id',
+                'message' => 'nullable|string',
+            ]);
 
-        $recipientId = $request->recipient_id;
+            $recipientId = $request->recipient_id;
 
-        // Check if a pending request already exists
-        $existingRequest = FriendRequest::where('sender_id', $request->user()->id)
-            ->where('recipient_id', $recipientId)
-            ->where('status', 'pending')
-            ->first();
+            // Check if a pending request already exists
+            $existingRequest = FriendRequest::where('sender_id', $request->user()->id)
+                ->where('recipient_id', $recipientId)
+                ->where('status', 'pending')
+                ->first();
 
-        if ($existingRequest) {
-            return response()->json(['error' => 'Friend request already sent'], 400);
+            if ($existingRequest) {
+                return response()->json(['error' => 'Friend request already sent'], 400);
+            }
+
+            // Create a new friend request
+            $friendRequest = FriendRequest::create([
+                'sender_id' => $request->user()->id,
+                'recipient_id' => $recipientId,
+                'message' => $request->input('message'),
+                'status' => 'pending',
+            ]);
+
+            return response()->json(['message' => 'Friend request sent']);
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes
+            Log::error('Failed to send friend request: ' . $e->getMessage());
+
+            // Return a meaningful error response
+            return response()->json(['error' => 'Failed to send friend request. Please try again later.'], 500);
         }
-
-        // Create a new friend request
-        $friendRequest = FriendRequest::create([
-            'sender_id' => $request->user()->id,
-            'recipient_id' => $recipientId,
-            'message' => $request->input('message'),
-            'status' => 'pending',
-        ]);
-
-        return response()->json(['message' => 'Friend request sent']);
     }
 
     /**
@@ -59,9 +68,9 @@ class FriendRequestController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        DB::beginTransaction();
-
         try {
+            DB::beginTransaction();
+
             // Update the friend request status to accepted
             $friendRequest->update(['status' => 'accepted', 'accepted_at' => now()]);
 
@@ -74,7 +83,8 @@ class FriendRequestController extends Controller
             return response()->json(['message' => 'Friend request accepted']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Failed to accept friend request'], 500);
+            Log::error('Failed to accept friend request: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to accept friend request. Please try again later.'], 500);
         }
     }
 
@@ -86,9 +96,14 @@ class FriendRequestController extends Controller
      */
     public function decline(FriendRequest $friendRequest)
     {
-        $friendRequest->update(['status' => 'declined']);
+        try {
+            $friendRequest->update(['status' => 'declined']);
 
-        return response()->json(['message' => 'Friend request declined']);
+            return response()->json(['message' => 'Friend request declined']);
+        } catch (\Exception $e) {
+            Log::error('Failed to decline friend request: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to decline friend request. Please try again later.'], 500);
+        }
     }
 
     /**
@@ -99,12 +114,17 @@ class FriendRequestController extends Controller
      */
     public function pendingRequests(Request $request)
     {
-        $pendingRequests = $request->user()->receivedFriendRequests()
-            ->where('status', 'pending')
-            ->with('sender:id,name,email')
-            ->get();
+        try {
+            $pendingRequests = $request->user()->receivedFriendRequests()
+                ->where('status', 'pending')
+                ->with('sender:id,name,email')
+                ->get();
 
-        return response()->json($pendingRequests);
+            return response()->json($pendingRequests);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch pending requests: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch pending requests. Please try again later.'], 500);
+        }
     }
 
     /**
@@ -115,11 +135,16 @@ class FriendRequestController extends Controller
      */
     public function sentRequests(Request $request)
     {
-        $sentRequests = $request->user()->sentFriendRequests()
-            ->with('recipient:id,name,email')
-            ->get();
+        try {
+            $sentRequests = $request->user()->sentFriendRequests()
+                ->with('recipient:id,name,email')
+                ->get();
 
-        return response()->json($sentRequests);
+            return response()->json($sentRequests);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch sent requests: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch sent requests. Please try again later.'], 500);
+        }
     }
 
     /**
@@ -130,11 +155,16 @@ class FriendRequestController extends Controller
      */
     public function cancelRequest(FriendRequest $friendRequest)
     {
-        if ($friendRequest->status === 'pending' && $friendRequest->sender_id === auth()->id()) {
-            $friendRequest->delete();
-            return response()->json(['message' => 'Friend request canceled']);
-        }
+        try {
+            if ($friendRequest->status === 'pending' && $friendRequest->sender_id === auth()->id()) {
+                $friendRequest->delete();
+                return response()->json(['message' => 'Friend request canceled']);
+            }
 
-        return response()->json(['error' => 'Unable to cancel friend request'], 400);
+            return response()->json(['error' => 'Unable to cancel friend request'], 400);
+        } catch (\Exception $e) {
+            Log::error('Failed to cancel friend request: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to cancel friend request. Please try again later.'], 500);
+        }
     }
 }
