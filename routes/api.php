@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 
-
-//! User creation and login routes
 Route::post('/register', [AuthController::class, 'createUser'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -50,7 +48,7 @@ Route::controller(AuthController::class)->group(function () {
 */
 
 // Post routes prefix
-Route::prefix('post')->group(function () {
+Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::get('/list', [PostController::class, 'index'])->name('post.list');
     Route::post('/create', [PostController::class, 'store'])->name('post.create');
     Route::get('/show/{id}', [PostController::class, 'show'])->name('post.show');
