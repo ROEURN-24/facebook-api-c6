@@ -9,15 +9,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use App\Models\User; // Import the User model
-
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
-
 
 class AuthController extends Controller
 {
-
-    // User registration
+    /**
+     * User registration.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function createUser(Request $request): JsonResponse
     {
         try {
@@ -82,7 +84,12 @@ class AuthController extends Controller
         }
     }
 
-    // User login
+    /**
+     * User login.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -124,7 +131,12 @@ class AuthController extends Controller
         ]);
     }
 
-    // Get user data
+    /**
+     * Get user data.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -137,7 +149,12 @@ class AuthController extends Controller
         ]);
     }
 
-    // Logout
+    /**
+     * Logout.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -169,5 +186,4 @@ class AuthController extends Controller
             ]
         ]);
     }
-
 }

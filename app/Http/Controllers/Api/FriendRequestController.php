@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\FriendRequest;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,7 +101,7 @@ class FriendRequestController extends Controller
     {
         $pendingRequests = $request->user()->receivedFriendRequests()
             ->where('status', 'pending')
-            ->with('sender')
+            ->with('sender:id,name,email')
             ->get();
 
         return response()->json($pendingRequests);
@@ -117,7 +116,7 @@ class FriendRequestController extends Controller
     public function sentRequests(Request $request)
     {
         $sentRequests = $request->user()->sentFriendRequests()
-            ->with('recipient')
+            ->with('recipient:id,name,email')
             ->get();
 
         return response()->json($sentRequests);
