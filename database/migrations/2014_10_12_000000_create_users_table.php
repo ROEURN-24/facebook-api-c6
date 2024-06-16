@@ -1,3 +1,4 @@
+2014_10_12_000000_create_users_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->string('background_image')->nullable();
             $table->string('reset_password_token')->nullable();
+            $table->timestamp('reset_password_token_expires_at')->nullable(); // Added column
             $table->rememberToken();
             $table->timestamps();
         });
