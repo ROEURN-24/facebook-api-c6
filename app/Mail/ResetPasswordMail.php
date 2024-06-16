@@ -38,7 +38,7 @@ class ResetPasswordMail extends Mailable
             ->view('emails.reset_password')
             ->subject('Reset Your Password')
             ->with([
-                'resetLink' => $resetUrl,
+               "Token" ,'resetLink' => $resetUrl,
                 'expires' => $this->expires,
             ]);
     }
