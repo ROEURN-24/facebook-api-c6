@@ -2,37 +2,32 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'remember_token',
+        'email_verified_at',
     ];
 
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $hidden = [
         'password',
@@ -40,33 +35,86 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * The attributes that should be cast to native types.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
     ];
 
     /**
-     * Determine if the user has verified their email address.
+     * Get the route key for the model.
      *
-     * @return bool
+     * @return string
      */
-    public function hasVerifiedEmail()
+    public function getRouteKeyName()
     {
-        return !is_null($this->email_verified_at);
+        return 'uuid';
     }
 
     /**
-     * Mark the given user's email as verified.
+     * Define the relationship for sent friend requests.
      *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sentFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    /**
+     * Define the relationship for received friend requests.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function receivedFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'recipient_id');
+    }
+
+    /**
+     * Define the relationship for friends.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+                    ->withPivot('accepted_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if the user has a specific friend.
+     *
+     * @param  User  $friend
      * @return bool
      */
-    public function markEmailAsVerified()
+    public function hasFriend(User $friend)
     {
-        $this->email_verified_at = now();
-        return $this->save();
+        return $this->friends()->where('id', $friend->id)->exists();
+    }
+
+    /**
+     * Remove a friend from the user's friends list.
+     *
+     * @param  User  $friend
+     * @return void
+     */
+    public function removeFriend(User $friend)
+    {
+        $this->friends()->detach($friend->id);
+    }
+
+    /**
+     * Define the relationship for user posts.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }
+

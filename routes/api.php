@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\Friend\FriendRequestController;
 
 // Post routes prefix
 Route::prefix('post')->group(function () {
@@ -18,7 +19,6 @@ Route::prefix('post')->group(function () {
     Route::delete('/delete/{id}', [PostController::class, 'destroy'])->name('post.destroy');
 });
 
-
 // Comment routes prefix
 Route::prefix('comment')->group(function () {
     Route::get('/list', [CommentController::class, 'index'])->name('comment.list');
@@ -28,17 +28,12 @@ Route::prefix('comment')->group(function () {
     Route::delete('/delete/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 });
 
-
-
 // Like routes prefix
 Route::prefix('like')->group(function () {
     Route::get('/list', [LikeController::class, 'index'])->name('like.list');
     Route::post('/create', [LikeController::class, 'store'])->name('like.create');
     Route::get('/show/{id}', [LikeController::class, 'show'])->name('like.show');
 });
-
-
-
 
 // Authentication routes
 Route::post('/register', [AuthController::class, 'createUser']);
@@ -68,18 +63,28 @@ Route::get('/storage/{path}', function ($path) {
     $filePath = storage_path('app/public/' . $path);
 
     // Check if the file exists
-    if (!File::exists($filePath)) {
-        abort(404);
-    }
-
+    if (!File::exists($filePath)) {abort(404);}
     // Determine the MIME type of the file
     $mime = File::mimeType($filePath);
-
     // Set appropriate headers for the response
-    $headers = [
-        'Content-Type' => $mime,
-    ];
+    $headers = ['Content-Type' => $mime,];
 
     // Return the file as a response
     return response()->file($filePath, $headers);
 })->where('path', '.*');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Friend request routes
+    Route::post('/friend-requests/{friendId}', [FriendRequestController::class, 'send']);
+    Route::put('/friend-requests/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
+    Route::put('/friend-requests/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
+    Route::delete('/friend-requests/{friendRequest}/cancel', [FriendRequestController::class, 'cancelRequest']);
+
+    // Listing routes
+    Route::get('/friend-requests', [FriendRequestController::class, 'listRequests']);
+    Route::get('/friends', [FriendRequestController::class, 'listFriends']);
+
+    // Unfriend route
+    Route::delete('/friend/{friend}/cancel', [FriendRequestController::class, 'deleteFriend']);
+});
