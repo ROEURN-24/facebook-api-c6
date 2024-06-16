@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('profile_image')->nullable();
             $table->string('background_image')->nullable();
-            $table->string('reset_password_token')->nullable();
-            $table->timestamp('reset_password_token_expires_at')->nullable(); // Added column
+            $table->integer('otp')->nullable();
+            $table->dateTime('otp_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -50,5 +50,7 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+
+
     }
 };

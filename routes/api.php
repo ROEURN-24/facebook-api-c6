@@ -34,7 +34,7 @@ Route::prefix('comment')->group(function () {
         Route::put('/update/{id}', [CommentController::class, 'update'])->name('comment.update');
         Route::delete('/delete/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
     });
-   
+
 });
 
 // Like routes prefix
@@ -44,7 +44,7 @@ Route::prefix('like')->group(function () {
         Route::post('/create', [LikeController::class, 'store'])->name('like.create');
         Route::get('/show/{id}', [LikeController::class, 'show'])->name('like.show');
     });
-   
+
 });
 
 // Authentication routes
@@ -86,33 +86,52 @@ Route::get('/storage/{path}', function ($path) {
 })->where('path', '.*');
 
 
-// Routes for FriendController
-Route::prefix('friends')->group(function () {
-    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
-    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
-    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
-    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
-    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
-});
 
-// Routes for FriendRequestController
+
+
+// Routes for managing friend requests
 Route::prefix('friend-requests')->group(function () {
+    // Send a friend request
     Route::post('/', [FriendRequestController::class, 'send']);
+
+    // Accept a friend request
     Route::put('/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
+
+    // Decline a friend request
     Route::put('/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
+
+    // Get pending friend requests for the authenticated user
     Route::get('/pending', [FriendRequestController::class, 'pendingRequests']);
+
+    // Get sent friend requests by the authenticated user
     Route::get('/sent', [FriendRequestController::class, 'sentRequests']);
+
+    // Cancel a friend request sent by the authenticated user
     Route::delete('/{friendRequest}', [FriendRequestController::class, 'cancelRequest']);
 });
 
 
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('follow', [FollowerController::class, 'follow']);
-    Route::delete('unfollow/{user}', [FollowerController::class, 'unfollow']);
-    Route::get('followers/{user}', [FollowerController::class, 'followers']);
-    Route::get('following/{user}', [FollowerController::class, 'following']);
+
+
+// Routes for managing friends
+Route::prefix('friends')->group(function () {
+    // Unfriend a user
+    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
+
+    // Block a user
+    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
+
+    // Unblock a user
+    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
+
+    // Get mutual friends between authenticated user and a specific user
+    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
+
+    // Get friend suggestions for the authenticated user
+    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
 });
+
 
 
 Route::middleware('auth:api')->group(function () {
@@ -120,4 +139,23 @@ Route::middleware('auth:api')->group(function () {
     Route::get('user-stories/{user}', [StoryController::class, 'userStories']);
     Route::get('all-stories', [StoryController::class, 'allStories']);
     Route::delete('story/{story}', [StoryController::class, 'delete']);
+});
+
+
+// Routes for managing friends
+Route::prefix('friends')->group(function () {
+    // Unfriend a user
+    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
+
+    // Block a user
+    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
+
+    // Unblock a user
+    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
+
+    // Get mutual friends between authenticated user and a specific user
+    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
+
+    // Get friend suggestions for the authenticated user
+    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
 });

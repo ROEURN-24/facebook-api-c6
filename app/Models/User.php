@@ -3,31 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $fillable = [
         'name', 'email', 'password',
     ];
 
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function posts()
-    {
-        return $this->hasMany(Post::class);
-    }
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -36,19 +22,41 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Relationship: Friend requests sent by this user
+    /**
+     * Get the comments associated with the user.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get the posts associated with the user.
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the friend requests sent by the user.
+     */
     public function sentFriendRequests()
     {
         return $this->hasMany(FriendRequest::class, 'sender_id');
     }
 
-    // Relationship: Friend requests received by this user
+    /**
+     * Get the friend requests received by the user.
+     */
     public function receivedFriendRequests()
     {
         return $this->hasMany(FriendRequest::class, 'recipient_id');
     }
 
-    // Relationship: Friends of this user
+    /**
+     * Get the friends of the user.
+     */
     public function friends()
     {
         return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
@@ -56,39 +64,58 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    // Method to check if a user is a friend of this user
+    /**
+     * Check if a user is a friend of the authenticated user.
+     *
+     * @param User $user
+     * @return bool
+     */
     public function isFriend(User $user)
     {
         return $this->friends()->where('friend_id', $user->id)->exists();
     }
 
+    /**
+     * Get the followers of the user.
+     */
     public function followers()
     {
         return $this->hasMany(Follower::class, 'user_id');
     }
 
     /**
-     * Define the relationship for user posts.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the users following the user.
      */
-
     public function following()
     {
         return $this->hasMany(Follower::class, 'follower_id');
     }
 
+    /**
+     * Check if the user is following another user.
+     *
+     * @param int $userId
+     * @return bool
+     */
     public function isFollowing($userId)
     {
         return $this->following()->where('user_id', $userId)->exists();
     }
 
+    /**
+     * Check if the user is followed by another user.
+     *
+     * @param int $userId
+     * @return bool
+     */
     public function isFollowedBy($userId)
     {
         return $this->followers()->where('follower_id', $userId)->exists();
     }
 
-
+    /**
+     * Get the stories posted by the user.
+     */
     public function stories()
     {
         return $this->hasMany(Story::class);

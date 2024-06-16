@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Mail;
 
 use App\Models\User;
@@ -12,36 +11,32 @@ class ResetPasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
-    public $resetLink;
+    public $otp;
     public $expires;
 
     /**
      * Create a new message instance.
      *
      * @param  User  $user
-     * @param  string  $token
-     * @param  \DateTime|null  $expires
+     * @param  int  $otp
+     * @param  string  $expires
      * @return void
      */
-    public function __construct(User $user, string $token, string $expiresAt)
+    public function __construct(User $user, int $otp, string $expires)
     {
         $this->user = $user;
-        $this->resetLink = $token;
-        $this->expires = $expiresAt;
+        $this->otp = $otp;
+        $this->expires = $expires;
     }
 
     public function build()
     {
-        $resetUrl = url('/password/reset/' . $this->resetLink);
-
         return $this->from('roeurnkaki@gmail.com', 'Artificial Reality')
             ->view('emails.reset_password')
             ->subject('Reset Your Password')
             ->with([
-               "Token" ,'resetLink' => $resetUrl,
+                'otp' => $this->otp,
                 'expires' => $this->expires,
             ]);
     }
-
-
 }

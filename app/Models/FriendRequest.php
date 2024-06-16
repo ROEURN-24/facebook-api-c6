@@ -10,11 +10,17 @@ class FriendRequest extends Model
         'sender_id', 'recipient_id', 'message', 'status', 'accepted_at'
     ];
 
+    /**
+     * Get the sender of the friend request.
+     */
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
+    /**
+     * Get the recipient of the friend request.
+     */
     public function recipient()
     {
         return $this->belongsTo(User::class, 'recipient_id');

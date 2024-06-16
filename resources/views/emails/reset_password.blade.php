@@ -1,4 +1,7 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Reset</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,23 +13,29 @@
             align-items: center;
             height: 100vh;
         }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="container bg-white rounded shadow-sm p-4" style="max-width: 600px;">
-        <h2 class="text-dark mb-4">Password Reset Request</h2>
-        <p class="text-secondary">Hello {{ $user->name }},</p>
-        <p class="text-secondary">We received a request to reset the password for your account. If you did not make this request, you can safely ignore this email.</p>
-        <p class="text-secondary">To reset your password, click on the following link (or copy and paste it into your browser):</p>
-        <p><a href="{{ $resetLink }}" class="btn btn-primary">{{ $resetLink }}</a></p>
-        <p class="text-secondary">This link will expire in {{ $expires }}.</p>
-        <p class="text-secondary">If you have any questions or need further assistance, please feel free to contact us.</p>
-        <p class="text-secondary">Thank you,</p>
-        <p class="text-secondary">The {{ config('app.name') }} Team</p>
+    <div class="container">
+        <h2>Password Reset Request</h2>
+        <p>Hello {{ $user->name }},</p>
+        <p>We received a request to reset the password for your account. If you did not make this request, you can safely ignore this email.</p>
+        <p>Your OTP is <strong>{{ $otp }}</strong>.</p>
+        <p>This OTP will expire in 2 minutes at <strong>{{ $expires }}</strong>.</p>
+        <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+        <p>Thank you,</p>
+        <p>The {{ config('app.name') }} Team</p>
         <div class="footer text-center mt-4">
             <p class="text-muted">&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
         </div>
     </div>
-
 </body>
 </html>

@@ -47,6 +47,7 @@ class FriendController extends Controller
     public function blockFriend(Request $request, User $friend)
     {
         // Logic to block a user
+        // This usually involves updating the relationship status in the database.
         return response()->json(['message' => 'User blocked']);
     }
 
@@ -60,6 +61,7 @@ class FriendController extends Controller
     public function unblockFriend(Request $request, User $friend)
     {
         // Logic to unblock a user
+        // This usually involves updating the relationship status in the database.
         return response()->json(['message' => 'User unblocked']);
     }
 
