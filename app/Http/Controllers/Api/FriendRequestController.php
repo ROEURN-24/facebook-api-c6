@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class FriendRequestController extends Controller
 {
- /**
+    /**
      * Send a friend request to a user.
      *
      * @param  Request  $request
@@ -22,7 +22,6 @@ class FriendRequestController extends Controller
         try {
             $request->validate([
                 'recipient_id' => 'required|exists:users,id',
-                'message' => 'nullable|string',
             ]);
 
             $user = $request->user();
@@ -48,7 +47,6 @@ class FriendRequestController extends Controller
             $friendRequest = FriendRequest::create([
                 'sender_id' => $user->id,
                 'recipient_id' => $recipientId,
-                'message' => $request->input('message'),
                 'status' => 'pending',
             ]);
 
@@ -59,17 +57,17 @@ class FriendRequestController extends Controller
         }
     }
 
-
-
-
     /**
      * Accept a friend request.
      *
-     * @param  FriendRequest  $friendRequest
+     * @param  Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function accept(FriendRequest $friendRequest)
+    public function accept(Request $request, $id)
     {
+        $friendRequest = FriendRequest::findOrFail($id);
+
         // Ensure the authenticated user is the recipient of the friend request
         if (auth()->id() !== $friendRequest->recipient_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -107,11 +105,19 @@ class FriendRequestController extends Controller
     /**
      * Decline a friend request.
      *
-     * @param  FriendRequest  $friendRequest
+     * @param  Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function decline(FriendRequest $friendRequest)
+    public function decline(Request $request, $id)
     {
+        $friendRequest = FriendRequest::findOrFail($id);
+
+        // Ensure the authenticated user is the recipient of the friend request
+        if (auth()->id() !== $friendRequest->recipient_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         try {
             // Update the friend request status to declined
             $friendRequest->update(['status' => 'declined']);
@@ -126,13 +132,21 @@ class FriendRequestController extends Controller
     /**
      * Cancel a friend request sent by the authenticated user.
      *
-     * @param  FriendRequest  $friendRequest
+     * @param  Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cancelRequest(FriendRequest $friendRequest)
+    public function cancelRequest(Request $request, $id)
     {
+        $friendRequest = FriendRequest::findOrFail($id);
+
+        // Ensure the authenticated user is the sender of the friend request
+        if (auth()->id() !== $friendRequest->sender_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         try {
-            if ($friendRequest->status === 'pending' && $friendRequest->sender_id === auth()->id()) {
+            if ($friendRequest->status === 'pending') {
                 $friendRequest->delete();
                 return response()->json(['message' => 'Friend request canceled']);
             }
@@ -144,7 +158,12 @@ class FriendRequestController extends Controller
         }
     }
 
-
+    /**
+     * Get the list of sent friend requests.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function sentRequests(Request $request)
     {
         try {
@@ -155,7 +174,6 @@ class FriendRequestController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            // Retrieve sent friend requests
             $sentRequests = FriendRequest::where('sender_id', $user->id)
                 ->where('status', 'pending')
                 ->with('recipient:id,name,email')
@@ -172,7 +190,12 @@ class FriendRequestController extends Controller
         }
     }
 
-
+    /**
+     * Get the list of pending friend requests.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function pendingRequests(Request $request)
     {
         try {
@@ -183,10 +206,9 @@ class FriendRequestController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            // Retrieve all pending friend requests where the user is the recipient
             $pendingRequests = FriendRequest::where('recipient_id', $user->id)
                 ->where('status', 'pending')
-                ->with('sender') // Eager load sender details
+                ->with('sender:id,name,email')
                 ->get();
 
             return response()->json([
@@ -199,5 +221,4 @@ class FriendRequestController extends Controller
             return response()->json(['error' => 'Failed to retrieve pending friend requests. Please try again later.'], 500);
         }
     }
-
 }

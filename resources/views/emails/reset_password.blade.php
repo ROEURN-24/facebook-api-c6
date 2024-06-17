@@ -30,6 +30,7 @@
         <p>We received a request to reset the password for your account. If you did not make this request, you can safely ignore this email.</p>
         <p>Your OTP is <strong>{{ $otp }}</strong>.</p>
         <p>This OTP will expire in 2 minutes at <strong>{{ $expires }}</strong>.</p>
+        <p>To reset your password, please use this OTP within the specified timeframe.</p>
         <p>If you have any questions or need further assistance, please feel free to contact us.</p>
         <p>Thank you,</p>
         <p>The {{ config('app.name') }} Team</p>

@@ -17,7 +17,6 @@ class CreateFriendRequestsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('sender_id');
             $table->unsignedBigInteger('recipient_id');
-            $table->text('message')->nullable();
             $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
             $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
