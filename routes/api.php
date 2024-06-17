@@ -8,11 +8,10 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\File;
-// use App\Http\Controllers\Api\FollowerController;
+use App\Http\Controllers\Api\FollowerController;
 use App\Http\Controllers\Api\FriendController;
-use App\Http\Controllers\Api\FriendRequestController;
 use App\Http\Controllers\Api\StoryController;
-
+use App\Http\Controllers\Api\FriendRequestController;
 
 // Post routes prefix
 Route::prefix('post')->group(function () {
@@ -87,51 +86,27 @@ Route::get('/storage/{path}', function ($path) {
 
 
 
-Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
 
 
-// Routes for managing friend requests
-Route::prefix('/friend-requests')->group(function () {
-    // Send a friend request
-    Route::post('/', [FriendRequestController::class, 'send']);
-
-    // Accept a friend request
-    Route::put('/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
-
-    // Decline a friend request
-    Route::put('/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
-
-    // Get pending friend requests for the authenticated user
-    Route::get('/pending', [FriendRequestController::class, 'pendingRequests']);
-
-    // Get sent friend requests by the authenticated user
-    Route::get('/sent', [FriendRequestController::class, 'sentRequests']);
-
-    // Cancel a friend request sent by the authenticated user
-    Route::delete('/{friendRequest}', [FriendRequestController::class, 'cancelRequest']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
+    Route::put('/friend-requests/{friendRequest}/accept', [FriendRequestController::class, 'accept']);
+    Route::put('/friend-requests/{friendRequest}/decline', [FriendRequestController::class, 'decline']);
+    Route::get('/friend-requests/pending', [FriendRequestController::class, 'pendingRequests']);
+    Route::get('/friend-requests/sent', [FriendRequestController::class, 'sentRequests']);
+    Route::delete('/friend-requests/{friendRequest}', [FriendRequestController::class, 'cancelRequest']);
 });
 
 
 
-// Routes for managing friends
-Route::prefix('friends')->group(function () {
-    // Unfriend a user
-    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
 
-    // Block a user
-    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
-
-    // Unblock a user
-    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
-
-    // Get mutual friends between authenticated user and a specific user
-    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
-
-    // Get friend suggestions for the authenticated user
-    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::delete('/friends/{friend}', [FriendController::class, 'unfriend']);
+    Route::post('/friends/{friend}/block', [FriendController::class, 'blockFriend']);
+    Route::post('/friends/{friend}/unblock', [FriendController::class, 'unblockFriend']);
+    Route::get('/friends/{user}/mutual', [FriendController::class, 'mutualFriends']);
+    Route::get('/friends/suggestions', [FriendController::class, 'friendSuggestions']);
 });
-
-
 
 Route::middleware('auth:api')->group(function () {
     Route::post('story', [StoryController::class, 'create']);
@@ -141,20 +116,9 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
-// Routes for managing friends
-Route::prefix('friends')->group(function () {
-    // Unfriend a user
-    Route::delete('/{friend}', [FriendController::class, 'unfriend']);
-
-    // Block a user
-    Route::post('/{friend}/block', [FriendController::class, 'blockFriend']);
-
-    // Unblock a user
-    Route::post('/{friend}/unblock', [FriendController::class, 'unblockFriend']);
-
-    // Get mutual friends between authenticated user and a specific user
-    Route::get('/{user}/mutual-friends', [FriendController::class, 'mutualFriends']);
-
-    // Get friend suggestions for the authenticated user
-    Route::get('/suggestions', [FriendController::class, 'friendSuggestions']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/follow', [FollowerController::class, 'follow']);
+    Route::post('/unfollow/{user}', [FollowerController::class, 'unfollow']);
+    Route::get('/followers/{user}', [FollowerController::class, 'followers']);
+    Route::get('/following/{user}', [FollowerController::class, 'following']);
 });
