@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use App\Models\FriendRequest;
+use App\Models\Post;
+use App\Models\Comment;
+use App\Models\Story;
+use App\Models\Follower;
 
 class User extends Authenticatable
 {
@@ -54,7 +59,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(FriendRequest::class, 'recipient_id');
     }
-
     /**
      * Get the friends of the user.
      */

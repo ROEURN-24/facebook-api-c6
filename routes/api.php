@@ -113,8 +113,6 @@ Route::prefix('/friend-requests')->group(function () {
 
 
 
-
-
 // Routes for managing friends
 Route::prefix('friends')->group(function () {
     // Unfriend a user
